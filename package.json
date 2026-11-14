@@ -1,0 +1,21 @@
+{
+  "name": "lingopro",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck"
+  },
+  "devDependencies": {
+    "turbo": "^2.1.2",
+    "typescript": "^5.5.4",
+    "@types/node": "^20.14.12",
+    "eslint": "^8.57.0"
+  }
+}
