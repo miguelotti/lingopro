@@ -2,7 +2,7 @@
 
 **Versão:** 1.0  
 **Status:** Proposta para MVP  
-**Base:** [PRD](./PRD.md) · [Especificação Técnica](./ESPECIFICACAO-TECNICA.md)
+**Base:** [PRD](./PRD.md) · [Especificação Técnica](./ESPECIFICACAO-TECNICA.md) · [Modelo de Banco de Dados](./MODELO-BANCO-DE-DADOS.md)
 
 ## 1. Visão lógica
 
@@ -17,11 +17,11 @@ Next.js (Vercel) ───────► Supabase Auth
    ├────────────────────► Supabase Storage (arquivos privados)
    └────────────────────► Route Handlers / Edge Functions
                                   │
-                       ┌──────────┼───────────┐
-                       ▼          ▼           ▼
+                       ┌──────────┼──────────────┐
+                       ▼          ▼              ▼
                  Meta Webhook  Google APIs  YouTube API
-                       │          │           │
-                       └──── eventos/tarefas ┘
+                       │          │              │
+                       └──── eventos/tarefas ─────┘
                                   ▼
                      integration_events / jobs
 ```
@@ -81,8 +81,6 @@ lessons 1─N assessments; assessments 1─N assessment_attempts
 lessons 1─N survey_responses; profiles 1─N survey_responses
 integration_events N─1 organizations
 ```
-
-Relacionamentos e cardinalidades finais dependem de como LingoPro representa turmas, cursos e matrículas. Todos os registros de negócio devem ser associados a tenant e sujeitos a políticas explícitas.
 
 ## 5. Fluxos arquiteturais
 
@@ -155,3 +153,10 @@ Antes da implementação de integrações e escala, registrar decisões curtas e
 - ADR-003: identidade, papéis e fluxo de convite.
 - ADR-004: gravação, publicação e retenção de vídeo.
 - ADR-005: fórmulas de métricas e eventos de progresso.
+
+## 10. Arquitetura de integrações
+
+A arquitetura detalhada de integrações foi separada em:
+- [ARQUITETURA-INTEGRACOES.md](./ARQUITETURA-INTEGRACOES.md)
+
+Esse documento descreve o fluxo de WhatsApp, Google Meet/Drive, YouTube e o padrão de idempotência, retry, segurança e eventos de integração do sistema.
