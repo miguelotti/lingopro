@@ -1,13 +1,33 @@
 import { requireRole } from '@/lib/auth/server';
+import { createServerClientInstance } from '@/lib/supabase/server';
+import { LeadForm } from './lead-form';
+
+export const dynamic = 'force-dynamic';
 
 export default async function LeadsPage() {
-  await requireRole(['manager', 'sales']);
+  const membership = await requireRole(['manager', 'sales']);
+  const supabase = createServerClientInstance();
+  const { data: leads, error } = await supabase
+    .from('leads')
+    .select('id, student_name, guardian_name, guardian_phone, email, source, status, last_moved_at, kanban_stages(name)')
+    .eq('organization_id', membership.organization_id)
+    .order('created_at', { ascending: false })
+    .limit(100);
+
   return (
     <div className="page-stack">
-      <div className="page-heading"><div><p className="eyebrow">CRM / Comercial</p><h1>Leads</h1><p className="muted">Lista e filtros do atendimento comercial.</p></div></div>
+      <div className="page-heading"><div><p className="eyebrow">CRM / Comercial</p><h1>Leads</h1><p className="muted">Leads recentes da sua organização.</p></div></div>
       <section className="panel">
-        <div className="toolbar"><label className="search-label">Buscar lead<input type="search" placeholder="Nome, telefone ou e-mail" disabled aria-label="Busca ficará disponível quando a tabela de leads estiver conectada" /></label><label>Etapa<select disabled><option>Todas as etapas</option></select></label><button className="button-primary" disabled title="Cadastro disponível após implementação do schema CRM">Novo lead</button></div>
-        <div className="empty-state"><span className="empty-icon">⌕</span><h2>Nenhum dado conectado ainda</h2><p>A interface está preparada. O próximo passo é criar as tabelas `leads`, `kanban_stages` e `lead_interactions`, com RLS e ações do servidor.</p></div>
+        <h2>Cadastrar lead</h2>
+        <LeadForm />
+      </section>
+      <section className="panel">
+        <div className="panel-heading"><div><h2>Leads recentes</h2><p className="muted">Máximo de 100 registros recentes.</p></div></div>
+        {error ? <p className="form-message error" role="alert">Não foi possível carregar os leads. Confira se as migrações foram aplicadas.</p> : !leads?.length ? <div className="empty-state"><span className="empty-icon">⌕</span><h2>Nenhum lead cadastrado</h2><p>Use o formulário acima para registrar o primeiro lead.</p></div> : (
+          <div className="table-wrap"><table><thead><tr><th>Aluno</th><th>Responsável</th><th>Contato</th><th>Etapa</th><th>Origem</th><th>Status</th></tr></thead><tbody>
+            {leads.map((lead: any) => <tr key={lead.id}><td><strong>{lead.student_name}</strong></td><td>{lead.guardian_name || '—'}</td><td>{lead.guardian_phone}{lead.email && <small className="table-subline">{lead.email}</small>}</td><td>{lead.kanban_stages?.name || '—'}</td><td>{lead.source}</td><td><span className="status-pill">{lead.status}</span></td></tr>)}
+          </tbody></table></div>
+        )}
       </section>
     </div>
   );
